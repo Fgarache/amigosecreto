@@ -27,7 +27,7 @@
     <div class="panel">
         <header>
             <h1>Panel Maestro</h1>
-            <p style="color: #cbd5e1;">Control de asignaciones y links familiares</p>
+            <p style="color: #cbd5e1;">Haz clic en el nombre para ir al link o usa el botón para copiarlo.</p>
         </header>
 
         <div style="margin: 20px 0;">
@@ -36,7 +36,7 @@
 
         <div id="status-msg" style="margin-bottom: 10px; font-weight: bold; color: #2ecc71;"></div>
 
-        <h3>Links de Invitación:</h3>
+        <h3>Lista de Invitados:</h3>
         <div id="lista-usuarios" class="user-list">
             <p style="text-align: center; padding: 20px;">Cargando base de datos...</p>
         </div>
@@ -66,13 +66,13 @@
                     const res = await fetch(`${CONFIG.API_URL}?action=masterSort`);
                     const data = await res.json();
                     if(data.result === "success") {
-                        alert("¡Sorteo completado! Ahora todos tienen un amigo secreto asignado.");
+                        alert("¡Sorteo completado!");
                         location.reload();
                     } else {
                         alert("Error: " + data.msg);
                     }
                 } catch (e) {
-                    alert("Error de conexión. Verifica tu API de Google.");
+                    alert("Error de conexión.");
                 }
             } else {
                 alert("Clave incorrecta.");
@@ -87,29 +87,29 @@
                 container.innerHTML = "";
 
                 data.forEach(u => {
-                    // LINK CORREGIDO: carpeta 8922 y nombre del repositorio amigosecreto
-                    // CONFIG.BASE_URL debe ser https://fgarache.github.io/amigosecreto
                     const linkFinal = `${CONFIG.BASE_URL}/8922/${u.ID}.html`;
 
                     const item = document.createElement('div');
                     item.className = 'user-item';
                     item.innerHTML = `
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-weight: bold; color: #f1c40f;">${u.Nombre}</span>
-                            <span style="font-size: 10px; color: #64748b;">Archivo: ${u.ID}.html</span>
+                        <div style="display: flex; flex-direction: column; text-align: left;">
+                            <a href="${linkFinal}" target="_blank" style="color: #f1c40f; font-weight: bold; text-decoration: underline; font-size: 1.1rem;">
+                                ${u.Nombre}
+                            </a>
+                            <span style="font-size: 11px; color: #64748b;">Archivo: ${u.ID}.html</span>
                         </div>
-                        <button class="copy-btn" onclick="copiarLink('${linkFinal}', '${u.Nombre}')">
+                        <button class="copy-btn" onclick="copiarLink('${linkFinal}')">
                             Copiar Link
                         </button>
                     `;
                     container.appendChild(item);
                 });
             } catch (e) {
-                container.innerHTML = "<p style='padding:20px;'>Error al conectar con la base de datos.</p>";
+                document.getElementById('lista-usuarios').innerHTML = "<p>Error al cargar.</p>";
             }
         }
 
-        function copiarLink(url, nombre) {
+        function copiarLink(url) {
             navigator.clipboard.writeText(url).then(() => {
                 const btn = event.target;
                 const originalText = btn.innerText;
@@ -124,5 +124,3 @@
     </script>
 </body>
 </html>
-
-//esto es una prueba
