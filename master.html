@@ -9,6 +9,8 @@
 </head>
 <body>
 
+    <div class="bg-glow"></div>
+
     <div id="auth-modal" class="overlay hidden">
         <div class="card">
             <h3>Confirmar Reinicio</h3>
@@ -29,12 +31,12 @@
         </header>
 
         <div style="margin: 20px 0;">
-            <button class="main-btn" onclick="abrirModal()">🎲 REINICIAR Y SORTEAR TODO</button>
+            <button id="spin-btn" onclick="abrirModal()" style="animation: none; background: var(--primary);">🎲 REINICIAR Y SORTEAR TODO</button>
         </div>
 
         <div id="status-msg" style="margin-bottom: 10px; font-weight: bold; color: #2ecc71;"></div>
 
-        <h3>Links Personalizados (Carpeta 8922):</h3>
+        <h3>Links de Invitación:</h3>
         <div id="lista-usuarios" class="user-list">
             <p style="text-align: center; padding: 20px;">Cargando base de datos...</p>
         </div>
@@ -42,7 +44,6 @@
 
     <script src="variable.js"></script>
     <script>
-        // Cargar la lista automáticamente al abrir
         window.onload = cargarLista;
 
         function abrirModal() {
@@ -59,19 +60,19 @@
             const pass = document.getElementById('pass-input').value;
             if (pass === "8922") {
                 cerrarModal();
-                document.getElementById('status-msg').innerText = "🔄 Barajando y respetando restricciones...";
+                document.getElementById('status-msg').innerText = "🔄 Barajando... Por favor espera.";
                 
                 try {
                     const res = await fetch(`${CONFIG.API_URL}?action=masterSort`);
                     const data = await res.json();
                     if(data.result === "success") {
-                        alert("¡Sorteo completado con éxito!");
+                        alert("¡Sorteo completado! Ahora todos tienen un amigo secreto asignado.");
                         location.reload();
                     } else {
                         alert("Error: " + data.msg);
                     }
                 } catch (e) {
-                    alert("Error de conexión con el servidor.");
+                    alert("Error de conexión. Verifica tu API de Google.");
                 }
             } else {
                 alert("Clave incorrecta.");
@@ -86,7 +87,8 @@
                 container.innerHTML = "";
 
                 data.forEach(u => {
-                    // EL LINK NUEVO: fgarache.github.io/SECRETO/8922/ID.html
+                    // LINK CORREGIDO: carpeta 8922 y nombre del repositorio amigosecreto
+                    // CONFIG.BASE_URL debe ser https://fgarache.github.io/amigosecreto
                     const linkFinal = `${CONFIG.BASE_URL}/8922/${u.ID}.html`;
 
                     const item = document.createElement('div');
@@ -103,13 +105,20 @@
                     container.appendChild(item);
                 });
             } catch (e) {
-                document.getElementById('lista-usuarios').innerHTML = "<p>Error al cargar la lista.</p>";
+                container.innerHTML = "<p style='padding:20px;'>Error al conectar con la base de datos.</p>";
             }
         }
 
         function copiarLink(url, nombre) {
             navigator.clipboard.writeText(url).then(() => {
-                alert(`¡Link de ${nombre} copiado!`);
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = "¡Copiado!";
+                btn.style.background = "#27ae60";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "";
+                }, 2000);
             });
         }
     </script>
