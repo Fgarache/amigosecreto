@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargando Sorteo...</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="loading-body">
+
+    <div class="loader-container">
+        <div class="loader"></div>
+        <h2 id="msg">Identificando familiar...</h2>
+        <span id="user-name-display">Cargando datos</span>
+    </div>
+
+    <script>
+        // 1. DICCIONARIO DE FAMILIA
+        const familia = {
+            "1": "Rebeca Benedith", "2": "Javier Garache", "3": "Javier Benedith",
+            "4": "Angela", "5": "Doris", "6": "Eliezer Benedith",
+            "7": "Claudia Benedith", "8": "Francisco Perez", "9": "Enmanuel Perez",
+            "10": "Marisol Benedith", "11": "Elieth Benedith"
+        };
+
+        // 2. DETECCIÓN AUTOMÁTICA DEL ID
+        // Extrae el nombre del archivo actual (ej: "1.html" -> "1")
+        const fileName = window.location.pathname.split("/").pop();
+        const ID_DETECTADO = fileName.split(".")[0];
+
+        // 3. ACTUALIZAR INTERFAZ
+        const nombre = familia[ID_DETECTADO] || "Invitado";
+        document.title = "Sorteo: " + nombre;
+        document.getElementById('user-name-display').innerText = nombre;
+
+        // 4. REDIRECCIÓN AL JUEGO
+        // Sube un nivel (../) para encontrar el index.html
+        setTimeout(() => {
+            window.location.href = "../index.html?id=" + ID_DETECTADO;
+        }, 1200);
+    </script>
+</body>
+</html>

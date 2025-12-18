@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Amigo Secreto Familiar 🎁</title>
+    
+    <meta property="og:title" content="¡Gran Sorteo de Amigo Secreto!">
+    <meta property="og:description" content="Entra para descubrir quién es tu amigo secreto. ¡No se lo digas a nadie!">
+    <meta property="og:image" content="https://fgarache.github.io/SECRETO/imagen.jpg">
+    <meta property="og:url" content="https://fgarache.github.io/SECRETO/index.html">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <img src="imagen.jpg" alt="Amigo Secreto Banner" class="game-banner">
+
+        <header>
+            <div class="player-badge">Hola, <strong id="display-id">Cargando...</strong></div>
+        </header>
+
+        <div id="msg-container"></div>
+
+        <div class="slot-machine">
+            <div class="slot-window">
+                <div id="name-display">¿LISTO?</div>
+            </div>
+            <button id="spin-btn">¡DESCUBRIR MI AMIGO!</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay hidden">
+        <div class="card">
+            <div class="confetti-icon">🎉</div>
+            <h2>¡Tu Amigo Secreto es!</h2>
+            <h1 id="winner-text"></h1>
+            <p>Por favor, anótalo o memorízalo. Guarda el secreto.</p>
+            <button class="close-btn" onclick="location.reload()">ENTENDIDO</button>
+        </div>
+    </div>
+
+    <script src="variable.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

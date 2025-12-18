@@ -1,0 +1,235 @@
+/* ==========================================
+   1. VARIABLES Y BASE (CASINO NEÓN)
+   ========================================== */
+:root {
+    --primary: #e94560;      /* Rojo Neón */
+    --secondary: #16213e;    /* Azul Oscuro */
+    --accent: #f1c40f;       /* Dorado */
+    --bg: #0f172a;           /* Fondo Negro Azulado */
+    --success: #2ecc71;      /* Verde Ganador */
+    --text-muted: #cbd5e1;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    overflow-x: hidden;
+    
+    /* FONDO BASE: Degradado oscuro de noche */
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    position: relative;
+}
+
+/* ==========================================
+   2. EFECTO DE NIEVE (CSS PARTICLES)
+   ========================================== */
+/* Capa 1: Nieve principal */
+body::before {
+    content: "";
+    position: fixed;
+    top: -100%; 
+    left: 0;
+    width: 100%;
+    height: 200%;
+    z-index: -1;
+    background-image: 
+        radial-gradient(circle at 20% 30%, white 1.5px, transparent 2.5px),
+        radial-gradient(circle at 50% 10%, white 2px, transparent 3px),
+        radial-gradient(circle at 80% 40%, white 1px, transparent 2px),
+        radial-gradient(circle at 30% 60%, rgba(255,255,255,0.5) 2px, transparent 3px),
+        radial-gradient(circle at 70% 80%, white 1.5px, transparent 2.5px);
+    background-size: 300px 300px;
+    animation: snowFall 12s linear infinite;
+}
+
+/* Capa 2: Nieve de fondo (más pequeña y lenta) */
+body::after {
+    content: "";
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    z-index: -2;
+    background-image: 
+        radial-gradient(circle at 15% 15%, white 1px, transparent 1.5px),
+        radial-gradient(circle at 85% 85%, white 1px, transparent 1.5px),
+        radial-gradient(circle at 40% 50%, white 1px, transparent 1.5px);
+    background-size: 500px 500px;
+    opacity: 0.3;
+    animation: snowFall 25s linear infinite;
+}
+
+@keyframes snowFall {
+    from { transform: translateY(0); }
+    to { transform: translateY(50%); }
+}
+
+/* ==========================================
+   3. CONTENEDOR Y COMPONENTES
+   ========================================== */
+.container { 
+    text-align: center; 
+    width: 95%; 
+    max-width: 450px; 
+    padding: 20px;
+    z-index: 10;
+}
+
+.game-banner {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 30px rgba(233, 69, 96, 0.4);
+    border: 2px solid rgba(255,255,255,0.1);
+}
+
+.player-badge {
+    background: linear-gradient(45deg, var(--primary), #ff5e78);
+    padding: 12px 25px;
+    border-radius: 50px;
+    margin-bottom: 30px;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.5);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* ==========================================
+   4. MÁQUINA SLOT (CASINO)
+   ========================================== */
+.slot-machine {
+    background: rgba(22, 33, 62, 0.85);
+    border: 5px solid #1a1a2e;
+    border-radius: 30px;
+    padding: 40px 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+}
+
+.slot-window {
+    background: #000;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    border: 3px solid var(--accent);
+    margin-bottom: 30px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+    animation: borderGlow 2s infinite alternate;
+}
+
+#name-display {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(241, 196, 15, 0.7);
+}
+
+/* ==========================================
+   5. BOTÓN DINÁMICO (EFECTO BORDES Y PULSO)
+   ========================================== */
+#spin-btn {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: white;
+    background: linear-gradient(-45deg, #2ecc71, #27ae60, #1abc9c, #2ecc71);
+    background-size: 300% 300%;
+    animation: gradientShift 3s ease infinite, pulseBtn 2s infinite;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(46, 204, 113, 0.5);
+    transition: 0.3s;
+}
+
+#spin-btn:hover {
+    box-shadow: 0 0 40px rgba(46, 204, 113, 0.9);
+    transform: scale(1.03);
+}
+
+#spin-btn:disabled {
+    background: #475569 !important;
+    animation: none;
+    opacity: 0.6;
+}
+
+/* ==========================================
+   6. MODALES Y CARGA
+   ========================================== */
+.overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    backdrop-filter: blur(12px);
+}
+
+.hidden { display: none; }
+
+.card {
+    background: white; color: #333; padding: 40px; border-radius: 30px;
+    text-align: center; width: 85%; max-width: 350px;
+    border: 8px solid var(--accent);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#winner-text { color: var(--primary); font-size: 2.5rem; margin: 15px 0; font-weight: 800; }
+
+/* ANIMACIONES */
+@keyframes borderGlow {
+    from { border-color: #f1c40f; box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
+    to { border-color: #ffeb3b; box-shadow: 0 0 25px rgba(241, 196, 15, 0.8); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseBtn {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(46, 204, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ==========================================
+   7. PANEL MASTER Y CARGAS
+   ========================================== */
+.panel {
+    max-width: 600px; width: 90%; background: #1e293b; 
+    padding: 30px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+.user-list { background: rgba(15, 23, 42, 0.8); border-radius: 12px; margin-top: 20px; }
+.user-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #1e293b; }
+.copy-btn { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+.loader-container { text-align: center; }
+.loader {
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    width: 50px; height: 50px;
+    animation: spinLoader 1s linear infinite;
+    margin: 0 auto 20px;
+}
+@keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

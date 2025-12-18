@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Control 🔒 - Amigo Secreto</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="auth-modal" class="overlay hidden">
+        <div class="card">
+            <h3>Confirmar Reinicio</h3>
+            <p>Introduce la clave para barajar de nuevo:</p>
+            <input type="password" id="pass-input" placeholder="****" style="font-size: 24px; text-align: center; width: 120px; padding: 10px; border: 2px solid #ddd; border-radius: 10px;">
+            <br><br>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="validarYReiniciar()" style="background: #e94560; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">BARAJAR</button>
+                <button onclick="cerrarModal()" style="background: #94a3b8; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <header>
+            <h1>Panel Maestro</h1>
+            <p style="color: #cbd5e1;">Control de asignaciones y links familiares</p>
+        </header>
+
+        <div style="margin: 20px 0;">
+            <button class="main-btn" onclick="abrirModal()">🎲 REINICIAR Y SORTEAR TODO</button>
+        </div>
+
+        <div id="status-msg" style="margin-bottom: 10px; font-weight: bold; color: #2ecc71;"></div>
+
+        <h3>Links Personalizados (Carpeta 8922):</h3>
+        <div id="lista-usuarios" class="user-list">
+            <p style="text-align: center; padding: 20px;">Cargando base de datos...</p>
+        </div>
+    </div>
+
+    <script src="variable.js"></script>
+    <script>
+        // Cargar la lista automáticamente al abrir
+        window.onload = cargarLista;
+
+        function abrirModal() {
+            document.getElementById('pass-input').value = "";
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('pass-input').focus();
+        }
+
+        function cerrarModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        async function validarYReiniciar() {
+            const pass = document.getElementById('pass-input').value;
+            if (pass === "8922") {
+                cerrarModal();
+                document.getElementById('status-msg').innerText = "🔄 Barajando y respetando restricciones...";
+                
+                try {
+                    const res = await fetch(`${CONFIG.API_URL}?action=masterSort`);
+                    const data = await res.json();
+                    if(data.result === "success") {
+                        alert("¡Sorteo completado con éxito!");
+                        location.reload();
+                    } else {
+                        alert("Error: " + data.msg);
+                    }
+                } catch (e) {
+                    alert("Error de conexión con el servidor.");
+                }
+            } else {
+                alert("Clave incorrecta.");
+            }
+        }
+
+        async function cargarLista() {
+            try {
+                const res = await fetch(`${CONFIG.API_URL}?action=read`);
+                const data = await res.json();
+                const container = document.getElementById('lista-usuarios');
+                container.innerHTML = "";
+
+                data.forEach(u => {
+                    // EL LINK NUEVO: fgarache.github.io/SECRETO/8922/ID.html
+                    const linkFinal = `${CONFIG.BASE_URL}/8922/${u.ID}.html`;
+
+                    const item = document.createElement('div');
+                    item.className = 'user-item';
+                    item.innerHTML = `
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-weight: bold; color: #f1c40f;">${u.Nombre}</span>
+                            <span style="font-size: 10px; color: #64748b;">Archivo: ${u.ID}.html</span>
+                        </div>
+                        <button class="copy-btn" onclick="copiarLink('${linkFinal}', '${u.Nombre}')">
+                            Copiar Link
+                        </button>
+                    `;
+                    container.appendChild(item);
+                });
+            } catch (e) {
+                document.getElementById('lista-usuarios').innerHTML = "<p>Error al cargar la lista.</p>";
+            }
+        }
+
+        function copiarLink(url, nombre) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert(`¡Link de ${nombre} copiado!`);
+            });
+        }
+    </script>
+</body>
+</html>
