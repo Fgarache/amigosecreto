@@ -3,46 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎁 Amigo Secreto Familiar 🎁</title>
-    
-    <meta property="og:title" content="¡Gran Sorteo de Amigo Secreto!">
-    <meta property="og:description" content="Entra para descubrir quién es tu amigo secreto. ¡No se lo digas a nadie!">
-    <meta property="og:image" content="https://fgarache.github.io/SECRETO/imagen.jpg">
-    <meta property="og:url" content="https://fgarache.github.io/SECRETO/index.html">
-    <meta property="og:type" content="website">
-
+    <title>Casino Amigo Secreto 🎰</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <div class="bg-glow"></div>
+
     <div class="container">
-        <img src="imagen.jpg" alt="Amigo Secreto Banner" class="game-banner">
-
-        <header>
-            <div class="player-badge">Hola, <strong id="display-id">Cargando...</strong></div>
-        </header>
-
-        <div id="msg-container"></div>
+        <img src="imagen.jpg" alt="Casino" class="game-banner">
+        
+        <div class="player-badge">
+            🎰 SORTEO FAMILIAR 🎰
+        </div>
 
         <div class="slot-machine">
             <div class="slot-window">
-                <div id="name-display">¿LISTO?</div>
+                <div id="name-display">¿QUIÉN SERÁ?</div>
             </div>
-            <button id="spin-btn">¡DESCUBRIR MI AMIGO!</button>
+            
+            <button id="spin-btn" onclick="iniciarSorteo()">🎰 GIRAR Y SORTEAR</button>
+        </div>
+
+        <p style="margin-top: 20px; color: #cbd5e1; font-size: 0.9rem; font-style: italic;">
+            "¡Que la suerte te acompañe!"
+        </p>
+    </div>
+
+    <div id="result-overlay" class="overlay hidden">
+        <div class="card">
+            <h2 style="color: #e94560;">✨ ¡TU AMIGO ES! ✨</h2>
+            <div id="winner-text" style="font-size: 2.5rem; font-weight: 800; margin: 20px 0; color: #16213e;">---</div>
+            <p style="color: #64748b;">Guarda bien este nombre, es un gran secreto.</p>
+            
+            <button onclick="detenerMusica()" style="background: #16213e; color: white; border: none; padding: 15px 30px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: bold; width: 100%;">
+                ACEPTAR Y CERRAR
+            </button>
         </div>
     </div>
 
-    <div id="overlay" class="overlay hidden">
-        <div class="card">
-            <div class="confetti-icon">🎉</div>
-            <h2>¡Tu Amigo Secreto es!</h2>
-            <h1 id="winner-text"></h1>
-            <p>Por favor, anótalo o memorízalo. Guarda el secreto.</p>
-            <button class="close-btn" onclick="location.reload()">ENTENDIDO</button>
-        </div>
-    </div>
+    <audio id="bg-music" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="variable.js"></script>
     <script src="script.js"></script>
+
 </body>
 </html>

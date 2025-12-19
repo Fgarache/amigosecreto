@@ -1,68 +1,101 @@
-const urlParams = new URLSearchParams(window.location.search);
-const MI_ID = urlParams.get('id') || "1";
+let nombres = [];
+let sorteoActivo = false;
+let amigoSecretoYaAsignado = "";
+let nombreDelUsuario = "";
 
-const nameDisplay = document.getElementById('name-display');
-const spinBtn = document.getElementById('spin-btn');
-let todasLasOpciones = [];
-let miParejaAsignada = null;
+// 1. CARGAR DATOS AL INICIO
+async function cargarDatosIniciales() {
+    console.log("🔍 Identificando usuario...");
+    const userId = obtenerIdActual();
+    if (!userId || userId === "index") return;
 
-async function cargarDatos() {
     try {
-        const response = await fetch(`${CONFIG.API_URL}?action=read&t=${new Date().getTime()}`);
-        const data = await response.json();
-        todasLasOpciones = data;
+        const resNombres = await fetch(`${CONFIG.API_URL}?action=read`);
+        const dataNombres = await resNombres.json();
+        nombres = dataNombres.map(u => u.Nombre);
 
-        const miRegistro = data.find(d => d.ID.toString() === MI_ID);
-        if (!miRegistro) {
-            document.body.innerHTML = "<h1>ID de usuario no encontrado</h1>";
-            return;
+        const resUser = await fetch(`${CONFIG.API_URL}?action=getAssignment&id=${userId}`);
+        const dataUser = await resUser.json();
+
+        if (dataUser.result === "success") {
+            nombreDelUsuario = dataUser.nombreUsuario;
+            amigoSecretoYaAsignado = dataUser.amigoSecreto;
+
+            // Mostrar saludo
+            const badge = document.querySelector('.player-badge');
+            if (badge) badge.innerText = `HOLA ${nombreDelUsuario.toUpperCase()}`;
+            console.log("✅ Usuario identificado:", nombreDelUsuario);
+        } else {
+            // BLOQUEO: Si Google devuelve error (porque el estado es 1)
+            document.getElementById('name-display').innerText = "YA PARTICIPASTE";
+            const btn = document.getElementById('spin-btn');
+            if (btn) btn.style.display = "none"; 
+            console.warn("🚫 Acceso denegado: " + dataUser.msg);
         }
-
-        document.getElementById('display-id').innerText = miRegistro.Nombre;
-
-        // Si el Master ya asignó a alguien, lo buscamos
-        const idPareja = miRegistro.Pareja;
-        miParejaAsignada = data.find(d => d.ID.toString() === idPareja.toString());
-
-        if (miRegistro.Estado.toString() === "1") {
-            document.getElementById('msg-container').innerHTML = `
-                <div class="info-box">
-                    <p>Ya descubriste a tu amigo secreto:</p>
-                    <h1 style="color: #f1c40f;">${miParejaAsignada.Nombre}</h1>
-                </div>`;
-            nameDisplay.innerText = miParejaAsignada.Nombre;
-            spinBtn.style.display = 'none';
-        }
-    } catch (e) { console.error(e); }
+    } catch (error) {
+        console.error("❌ Error en carga inicial:", error);
+    }
 }
 
-spinBtn.addEventListener('click', () => {
-    if (!miParejaAsignada) return alert("El sorteo aún no ha sido generado por el Master.");
+// 2. INICIAR SORTEO
+async function iniciarSorteo() {
+    if (sorteoActivo || !amigoSecretoYaAsignado) return;
+
+    const audio = document.getElementById('bg-music');
+    if (audio) { audio.currentTime = 0; audio.play(); }
+
+    const btn = document.getElementById('spin-btn');
+    const display = document.getElementById('name-display');
     
-    spinBtn.disabled = true;
+    btn.disabled = true;
+    sorteoActivo = true;
+
     let vueltas = 0;
-    const maxVueltas = 40;
-
     const intervalo = setInterval(() => {
-        const azar = todasLasOpciones[Math.floor(Math.random() * todasLasOpciones.length)].Nombre;
-        nameDisplay.innerText = azar;
-        
+        const nombreAzar = nombres[Math.floor(Math.random() * nombres.length)];
+        display.innerText = nombreAzar || "SORTEANDO...";
         vueltas++;
-        if (vueltas > maxVueltas) {
-            clearInterval(intervalo);
-            nameDisplay.innerText = miParejaAsignada.Nombre;
-            nameDisplay.style.color = "#2ecc71";
-            marcarComoVisto();
-        }
-    }, 70);
-});
 
-async function marcarComoVisto() {
-    await fetch(`${CONFIG.API_URL}?action=marcarVisto&idJugador=${MI_ID}`);
-    setTimeout(() => {
-        document.getElementById('winner-text').innerText = miParejaAsignada.Nombre;
-        document.getElementById('overlay').classList.remove('hidden');
-    }, 1000);
+        if (vueltas >= 50) { // 5 segundos
+            clearInterval(intervalo);
+            mostrarResultadoFinal();
+        }
+    }, 100);
 }
 
-cargarDatos();
+// 3. MOSTRAR RESULTADO Y BLOQUEAR
+function mostrarResultadoFinal() {
+    document.getElementById('name-display').innerText = amigoSecretoYaAsignado;
+    const btn = document.getElementById('spin-btn');
+    if (btn) btn.style.display = "none"; // Desaparece al instante
+
+    setTimeout(() => {
+        document.getElementById('winner-text').innerText = amigoSecretoYaAsignado;
+        document.getElementById('result-overlay').classList.remove('hidden');
+        
+        const userId = obtenerIdActual();
+        // Llamada para poner el 1 en la Columna D
+        fetch(`${CONFIG.API_URL}?action=marcarVisto&idJugador=${userId}`);
+    }, 800);
+
+    sorteoActivo = false;
+}
+
+function obtenerIdActual() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let id = urlParams.get('id');
+    if (!id) {
+        const urlParts = window.location.pathname.split('/');
+        id = urlParts[urlParts.length - 1].replace('.html', '');
+    }
+    return id;
+}
+
+function detenerMusica() {
+    const audio = document.getElementById('bg-music');
+    if (audio) { audio.pause(); audio.currentTime = 0; }
+    document.getElementById('result-overlay').classList.add('hidden');
+    location.reload(); // Recargar para confirmar bloqueo
+}
+
+cargarDatosIniciales();
